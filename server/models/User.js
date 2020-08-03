@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
 
-const PublicJSONSchema = new mongoose.Schema({
-  user_id: mongoose.Types.ObjectId,
-  first_name: String,
-  last_name: String,
-  photo: String,
-});
+const PublicJSONSchema = new mongoose.Schema(
+  {
+    user_id: mongoose.Schema.Types.ObjectId,
+    first_name: String,
+    last_name: String,
+    photo: String,
+    email: String,
+  },
+  { _id: false }
+);
 
 const PostSchema = new mongoose.Schema({
   description: String,
@@ -20,6 +24,11 @@ const ChatSchema = new mongoose.Schema({
   user: PublicJSONSchema,
   timestamp: { type: Date, default: Date.now },
   isMe: Boolean,
+});
+
+const ConversationSchema = new mongoose.Schema({
+  email: String,
+  chat: [ChatSchema],
 });
 
 const UserSchema = new mongoose.Schema({
@@ -49,7 +58,7 @@ const UserSchema = new mongoose.Schema({
   },
   public_json: PublicJSONSchema,
   posts: [PostSchema],
-  activeChats: [ChatSchema],
+  conversations: [ConversationSchema],
 });
 
 const User = mongoose.model("User", UserSchema);

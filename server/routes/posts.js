@@ -20,14 +20,15 @@ router.post("/", isAuthenticated, async (req, res) => {
         response: `Something went wrong geting posts ${err}`,
       });
     }
-    detect.fromFile(files.picture.path, (err, result) => {
+
+    detect.fromFile(files.photo.path, (err, result) => {
       if (err) {
         return res.send({ status: 0, response: "error detecting" });
       }
 
       const pictureName = uuid() + "." + result.ext;
 
-      const oldPath = files.picture.path;
+      const oldPath = files.photo.path;
       const newPath = path.join(__dirname, "..", "pictures", pictureName);
 
       fs.copyFile(oldPath, newPath, async (err) => {
@@ -43,7 +44,7 @@ router.post("/", isAuthenticated, async (req, res) => {
         user.posts.push({
           _id: new mongoose.Types.ObjectId(),
           description: fields.description,
-          photo: newPath,
+          photo: pictureName,
           user: {
             _id: new mongoose.Types.ObjectId(req.userId),
             photo: user.photo,
@@ -90,40 +91,60 @@ router.get("/", isAuthenticated, async (req, res) => {
 // #########################
 // like a post
 router.post("/likes", isAuthenticated, async (req, res) => {
+  const form = new formidable.IncomingForm();
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.log(err);
+    }
+
+    post_id = fields.post_id;
+
+    let user = await User.findOne({ "posts._id": post_id });
+
+    for (let i = 0; i < user.posts.length; i++) {
+      if (user.posts[i].id === post_id) {
+        const likeIndex = user.posts[i].likes.findIndex(
+          (x) => x.user_id.toString() === req.userId.toString()
+        );
+
+        if (likeIndex >= 0) {
+          user.posts[i].likes.splice(likeIndex, 1);
+        } else {
+          user.posts[i].likes.push({
+            user_id: req.userId,
+            first_name: req.firstName,
+            last_name: req.lastName,
+            photo: req.photo,
+          });
+        }
+
+        await User.findOneAndUpdate(
+          { "posts._id": post_id },
+          user,
+          { new: true, useFindAndModify: false },
+          (err, updatePost) => {
+            if (err) {
+              console.log("Error updating likes", err);
+            }
+            res.send({ status: 1, response: updatePost });
+          }
+        );
+      }
+    }
+  });
+});
+
+// #########################
+// get all likes
+router.get("/likes", async (req, res) => {
   const { post_id } = req.query;
 
   let user = await User.findOne({ "posts._id": post_id });
 
-  for (let i = 0; i < user.posts.length; i++) {
-    if (user.posts[i].id === post_id) {
-      const likeIndex = user.posts[i].likes.findIndex(
-        (x) => x.user_id.toString() === req.userId.toString()
-      );
-      console.log("likeIndex", likeIndex);
-      if (likeIndex >= 0) {
-        user.posts[i].likes.splice(likeIndex, 1);
-      } else {
-        user.posts[i].likes.push({
-          user_id: req.userId,
-          first_name: req.firstName,
-          last_name: req.lastName,
-          photo: req.photo,
-        });
-      }
-
-      await User.findOneAndUpdate(
-        { "posts._id": post_id },
-        user,
-        { new: true, useFindAndModify: false },
-        (err, updatePost) => {
-          if (err) {
-            console.log("Error updating likes", err);
-          }
-          res.send({ status: 1, response: updatePost });
-        }
-      );
-    }
-  }
+  return res
+    .status(200)
+    .send({ response: user.posts.find((item) => item.id === post_id).likes });
 });
 
 module.exports = router;

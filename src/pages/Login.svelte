@@ -1,5 +1,23 @@
 <script>
+  import { postRequest } from "./../utils/postRequest.js";
+  import { profile } from "./../store.js";
+
   let src = "fbicon2.png";
+
+  let emailInput;
+  let passwordInput;
+  const onLogin = async e => {
+    e.preventDefault();
+    let form = new FormData();
+    form.append("email", emailInput.value);
+    form.append("password", passwordInput.value);
+    let response = await postRequest("/users/login", form);
+    if (response.status === 1) {
+      localStorage.setItem("token", response.token);
+      $profile = { ...response.user };
+      location.href = "/newsfeed";
+    }
+  };
 </script>
 
 <style>
@@ -18,16 +36,21 @@
 <main class="bg-gray-100">
   <div class="w-screen bg-blue-700 h-12 flex shadow-md">
     <img {src} alt="logo" class="w-10 h-10 ml-6 mt-1" />
-    <form class="login self-center">
+    <form on:submit={e => onLogin(e)} class="login self-center">
       <input
+        bind:this={emailInput}
+        name="email"
         type="email"
         placeholder="Email"
         class="rounded-sm text-gray-700 pl-1 h-6 shadow-md" />
       <input
+        bind:this={passwordInput}
+        name="password"
         type="password"
         placeholder="Password"
         class="rounded-sm text-gray-700 pl-1 h-6 shadow-md" />
       <button
+        type="submit"
         class="bg-blue-800 hover:bg-blue-600 rounded-sm w-20 text-white
         shadow-md">
         Log In

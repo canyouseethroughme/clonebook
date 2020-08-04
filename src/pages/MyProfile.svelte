@@ -21,15 +21,25 @@
 
 <style>
   .container {
-    margin-top: 10rem;
+    position: absolute;
+    height: 20rem;
+    width: 20rem;
+    top: 10rem;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
   }
   .image_cropper {
-    width: 7.5rem;
-    height: 7.5rem;
+    width: 10rem;
+    height: 10rem;
     clip-path: circle(50% at 50% 50%);
+    margin: auto;
   }
   img {
-    height: 15rem;
+    object-fit: cover;
+    height: 20rem;
   }
 </style>
 
@@ -48,15 +58,33 @@
           alt="profile" />
       {/if}
     </div>
-    <p>{$profile.first_name} {$profile.last_name}</p>
-
+    <p class="mt-2">
+      <span class="text-gray-400">Name:</span>
+      {$profile.first_name} {$profile.last_name}
+    </p>
+    <p class="mt-2">
+      <span class="text-gray-400">Email:</span>
+      {$profile.email}
+    </p>
+    <p
+      class="mt-2"
+      on:click={() => profileImageInput.click()}
+      style="cursor: pointer">
+      📷 Change profile picture
+    </p>
     <input
       type="file"
       bind:this={profileImageInput}
+      style="display: none"
       accept="image/*"
       alt="profileFile"
       on:change={e => selectImage(e)} />
-    <button on:click={onPost}>Change profile image</button>
+    <button
+      class="bg-green-600 hover:bg-green-500 rounded-sm w-20 text-white h-8 mt-4
+      w-64 shadow-md rounded-sm"
+      on:click={onPost}>
+      Save
+    </button>
 
   </div>
 

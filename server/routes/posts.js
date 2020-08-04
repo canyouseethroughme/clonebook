@@ -20,7 +20,6 @@ router.post("/", isAuthenticated, async (req, res) => {
         response: `Something went wrong geting posts ${err}`,
       });
     }
-
     detect.fromFile(files.photo.path, (err, result) => {
       if (err) {
         return res.send({ status: 0, response: "error detecting" });

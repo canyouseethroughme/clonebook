@@ -6,6 +6,11 @@
 
   let emailInput;
   let passwordInput;
+  let registerFirstNameInput;
+  let registerLastNameInput;
+  let registerEmailInput;
+  let registerPasswordInput;
+
   const onLogin = async e => {
     e.preventDefault();
     let form = new FormData();
@@ -16,6 +21,21 @@
       localStorage.setItem("token", response.token);
       $profile = { ...response.user };
       location.href = "/newsfeed";
+    }
+  };
+
+  const onSignup = async e => {
+    e.preventDefault();
+    let form = new FormData();
+
+    form.append("first_name", registerFirstNameInput.value);
+    form.append("last_name", registerLastNameInput.value);
+    form.append("email", registerEmailInput.value);
+    form.append("password", registerPasswordInput.value);
+
+    let response = await postRequest("/users/signup", form);
+    if (response.status === 1) {
+      location.href = "/";
     }
   };
 </script>
@@ -78,24 +98,29 @@
       </p>
     </div>
     <div class="signup">
-      <form action="" class="signup-form h-56 w-64">
+      <form on:submit={e => onSignup(e)} class="signup-form h-56 w-64">
         <input
+          bind:this={registerFirstNameInput}
           type="text"
           placeholder="First name"
           class="h-8 pl-1 shadow-md w-auto rounded-sm" />
         <input
+          bind:this={registerLastNameInput}
           type="text"
           placeholder="Last name"
           class="h-8 pl-1 shadow-md w-auto rounded-sm" />
         <input
+          bind:this={registerEmailInput}
           type="email"
           placeholder="Email"
           class="h-8 pl-1 shadow-md w-auto rounded-sm" />
         <input
+          bind:this={registerPasswordInput}
           type="password"
           placeholder="Password"
           class="h-8 pl-1 shadow-md w-auto rounded-sm" />
         <button
+          type="submit"
           class="bg-green-600 hover:bg-green-500 rounded-sm w-20 text-white h-8
           mt-4 w-64 shadow-md rounded-sm">
           Sign Up

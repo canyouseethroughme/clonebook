@@ -26,12 +26,19 @@
   div.friend {
     cursor: pointer;
     margin-bottom: 0.6rem;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+  }
+  div.friend > p {
+    justify-self: start;
+    align-self: center;
   }
   h4 {
     color: #65676b;
     margin-bottom: 0.7rem;
     font-weight: 200;
     font-size: 0.8rem;
+    text-align: start;
   }
 </style>
 
@@ -39,8 +46,14 @@
   <h4>Chat with friends</h4>
   {#each $contacts as contact}
     <div class="friend" on:click={e => showChatWindow(e, contact)}>
-      <PhotoThumbnail photo={contact.photo} contactId={contact._id} />
-      {contact.first_name} {contact.last_name}
+      {#if contact.photo == 'https://i.ibb.co/gSbgf9K/male-placeholder.jpg'}
+        <PhotoThumbnail photo={contact.photo} contactId={contact._id} />
+      {:else}
+        <PhotoThumbnail
+          photo={'http://localhost:8899/static/' + contact.photo}
+          contactId={contact._id} />
+      {/if}
+      <p>{contact.first_name} {contact.last_name}</p>
     </div>
   {/each}
 </section>

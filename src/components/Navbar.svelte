@@ -1,4 +1,6 @@
 <script>
+  import { putRequest } from "./../utils/putRequest.js";
+  import { profile } from "./../store.js";
   let ajUsers = [];
   let searchInput = "";
 
@@ -14,20 +16,25 @@
   // connect to API and get users
   const getUsers = async () => {
     ajUsers = [];
-    // get users from the API
-    // let connection = await fetch(
-    //   "http://localhost/users?searchFor=" + searchInput
-    // );
-    // let data = await connection.json();
     let data = [{ name: "Andrei" }];
     ajUsers = data;
 
     showSearchResults();
   };
+
+  const onSignout = async () => {
+    let response = await putRequest("/users/signout", $profile._id);
+    if (response.status === 1) {
+      localStorage.clear();
+      window.location.href = "/";
+    }
+  };
 </script>
 
 <style>
   nav {
+    position: fixed;
+    top: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
@@ -36,6 +43,7 @@
     background-color: #fff;
     color: #373737;
     box-shadow: 0px -31px 22px 21px rgba(0, 0, 0, 0.75);
+    z-index: 100;
   }
 
   /* SEARCH CONTAINER */
@@ -46,7 +54,11 @@
     justify-items: start;
     padding-left: 1rem;
   }
-  div#containerResults {
+  div.signout {
+    justify-self: end;
+    padding-right: 1rem;
+  }
+  /* div#containerResults {
     height: 100vh;
     width: 16rem;
     box-shadow: -31px 0px 21px 21px rgba(0, 0, 0, 0.75);
@@ -69,7 +81,7 @@
   }
   div#userResult {
     height: 2rem;
-  }
+  } */
   div.logoNav {
     height: 2rem;
     width: 2rem;
@@ -84,6 +96,7 @@
   div#iconsContainer {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
+    justify-items: center;
   }
 
   /* PROFILE CONTAINER */
@@ -95,7 +108,7 @@
     <div class="logoNav" style="z-index: 10">
       <img src="./fbicon2.png" alt="logo" />
     </div>
-    <form style="z-index: 10">
+    <!-- <form style="z-index: 10">
       <input
         type="text"
         on:input={getUsers}
@@ -111,7 +124,7 @@
           <div id="userResult">{jUser.name} {jUser.lastName}</div>
         {/each}
       </div>
-    </div>
+    </div> -->
   </div>
   <div id="iconsContainer">
     <div class="icon">
@@ -121,8 +134,11 @@
     <div class="icon">🛍️</div>
     <div class="icon">🤼</div>
     <div class="icon">
-      <a href="/myprofile">🎮</a>
+      <a href="/myprofile">😀</a>
     </div>
+  </div>
+  <div class="signout">
+    <button on:click={onSignout}>Signout</button>
   </div>
 </nav>
 <!-- #################################### -->

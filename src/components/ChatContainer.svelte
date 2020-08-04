@@ -3,7 +3,7 @@
   import PhotoThumbnail from "./PhotoThumbnail.svelte";
   import io from "socket.io-client";
   import { onMount } from "svelte";
-  // console.log($activeChat);
+
   const socket = io.connect("http://localhost:8899");
   $: currentConvo = $profile.conversations.find(
     convo => convo.email === $activeChat.user.email
@@ -32,7 +32,7 @@
       };
     }
     console.log("privateMessageEvent", data);
-    // from, message, timestamp
+
     currentConvo.chat = [
       ...currentConvo.chat,
       {
@@ -41,20 +41,6 @@
         isMe: data.user._id === $profile._id ? true : false
       }
     ];
-    // currentFriend.chat = [}
-    //   ...currentFriend.chat,
-    //   {
-    //     isMe: data.from === $profile._id ? true : false,
-    //     message: data.message,
-    //     timestamp: data.timestamp
-    //   }
-    // ];
-    // if (data.from === $profile._id) {
-    //   bindInput.value = "";
-    // }
-    // bindMessagesContainer.scrollTop =
-    //   bindMessagesContainer.scrollHeight - bindMessagesContainer.clientHeight;
-    // console.log(currentFriend.chat);
   });
 
   const hideChat = () => {
@@ -64,7 +50,7 @@
   };
 
   const onSendMessage = () => {
-    console.log(messageInput.value);
+    // console.log(messageInput.value);
 
     if (messageInput.value !== "") {
       socket.emit(
@@ -75,8 +61,6 @@
       );
     }
     messageInput.value = "";
-    // add message to convo if exists
-    // if not create convo
   };
 </script>
 
@@ -85,7 +69,7 @@
     position: fixed;
     bottom: 0px;
     right: 13rem;
-    width: 12rem;
+    width: 13rem;
     height: 15rem;
     background-color: #fff;
     box-shadow: 2px 1px 23px 6px rgba(0, 0, 0, 0.25);
@@ -107,32 +91,46 @@
     justify-items: start;
     padding-left: 1rem;
   }
+
+  .send_container {
+    position: absolute;
+    bottom: 5px;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+  }
+  .message_container {
+    margin: auto;
+    height: 10rem;
+    width: 10rem;
+    overflow: scroll;
+  }
+  .scroll {
+    overflow: hidden;
+  }
 </style>
 
 {#if $activeChat.show}
   <section class="chatFriend">
     <div class="header">
-      <div class="userName" />
+      <div class="userName">{$activeChat.user.first_name}</div>
       <button on:click={hideChat}>❌</button>
     </div>
-    <!-- messages input -->
-    <div>
-      <PhotoThumbnail
-        photo={$activeChat.user.photo}
-        contactId={$activeChat.user._id} />
-      {$activeChat.user.first_name}
-      {#if currentConvo}
-        {#each currentConvo.chat as chat}
-          <p style={`color: ${chat.isMe ? 'red' : 'blue'};`}>{chat.message}</p>
-          <!-- {#if chat.isMe}
-            <p>mesaul meu</p>
-          {/if} -->
-        {/each}
-      {:else}
-        <p>No messages</p>
-      {/if}
+    <div class="message_container">
+      <div class="scroll">
+        {#if currentConvo}
+          {#each currentConvo.chat as chat}
+            <p style={chat.isMe ? 'color: blue;' : 'color: red;'}>
+              {chat.message}
+            </p>
+          {/each}
+        {:else}
+          <p>No messages</p>
+        {/if}
+      </div>
     </div>
-    <input type="text" bind:this={messageInput} />
-    <button on:click={onSendMessage}>Send</button>
+    <div class="send_container">
+      <input type="text" bind:this={messageInput} />
+      <button on:click={onSendMessage}>Send</button>
+    </div>
   </section>
 {/if}

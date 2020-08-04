@@ -28,21 +28,22 @@
 <style>
   .container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 4fr 1fr;
     width: 100vw;
     height: calc(100vh - 3rem);
     margin-top: 3rem;
+    text-align: center;
   }
 </style>
 
 <!-- #################################################### -->
 <main>
   <Navbar />
-  <div class="container">
-    <div />
-    <PostsContainer />
-    <ChatFriends />
-  </div>
+  <!-- <div class="container"> -->
+  <div />
+  <PostsContainer />
+  <ChatFriends />
+  <!-- </div> -->
   {#if $activeChat.show}
     <ChatContainer />
   {/if}

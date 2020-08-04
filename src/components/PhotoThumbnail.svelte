@@ -9,22 +9,33 @@
 </script>
 
 <style>
-  img {
+  .container {
+    position: relative;
+  }
+  .image_cropper {
     width: 2rem;
+    height: 2rem;
+    clip-path: circle(50% at 50% 50%);
+  }
+  img {
+    width: 10rem;
   }
 
   span {
-    width: 1rem;
-    height: 1rem;
+    width: 10px;
+    height: 10px;
     position: absolute;
-    border: 2px solid #f0f2f5;
+    top: 1rem;
+    border: 1px solid #31a34c;
     background-color: #31a34c;
     border-radius: 50%;
   }
 </style>
 
-<div>
-  <img src={photo} alt="" />
+<div class="container">
+  <div class="image_cropper">
+    <img src={photo} alt="profile" />
+  </div>
   <span
     style={currentContact && currentContact.token ? 'display: block;' : 'display: none;'} />
 </div>

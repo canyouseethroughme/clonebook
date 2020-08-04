@@ -14,59 +14,74 @@ const { isAuthenticated } = require("../middleware/auth");
 // ########################################################
 // user signup
 router.post("/signup", (req, res) => {
-  const { first_name, last_name, email, password } = req.body;
+  // const { first_name, last_name, email, password } = req.body;
+  const form = new formidable.IncomingForm();
 
-  if (first_name && last_name && email && password) {
-    // check password length
-    if (password.length < 7) {
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
       return res.send({
         status: 0,
-        response: "Inserted password is too short",
-      });
-    } else {
-      bcrypt.hash(password, saltRounds, async (err, hashedPassword) => {
-        if (err)
-          return res.json({
-            status: 0,
-            response: `Error trying to signup user: ${err}`,
-          });
-        // check if email already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-          return res.json({ status: 0, response: "User already exists." });
-        }
-        // sign up user
-        try {
-          const userId = new mongoose.Types.ObjectId();
-          const photoDefault = "https://i.ibb.co/gSbgf9K/male-placeholder.jpg";
-          const newUser = {
-            _id: userId,
-            first_name,
-            last_name,
-            email,
-            password: hashedPassword,
-            public_json: {
-              user_id: userId,
-              first_name,
-              last_name,
-              photo: photoDefault,
-              email,
-            },
-          };
-          const user = await User.create(newUser);
-          return res.send({
-            status: 1,
-            response: `User ${newUser.email} - ${user._id} is created.`,
-          });
-        } catch (error) {
-          return res.json({
-            status: 0,
-            response: `Error while signing up user ${error}`,
-          });
-        }
+        response: `Something went wrong signing up with ${err}`,
       });
     }
-  }
+    // console.log(fields);
+    let first_name = fields.first_name;
+    let last_name = fields.last_name;
+    let email = fields.email;
+    let password = fields.password;
+    if (first_name && last_name && email && password) {
+      // check password length
+      if (password.length < 7) {
+        return res.send({
+          status: 0,
+          response: "Inserted password is too short",
+        });
+      } else {
+        bcrypt.hash(password, saltRounds, async (err, hashedPassword) => {
+          if (err)
+            return res.json({
+              status: 0,
+              response: `Error trying to signup user: ${err}`,
+            });
+          // check if email already exists
+          const existingUser = await User.findOne({ email });
+          if (existingUser) {
+            return res.json({ status: 0, response: "User already exists." });
+          }
+          // sign up user
+          try {
+            const userId = new mongoose.Types.ObjectId();
+            const photoDefault =
+              "https://i.ibb.co/gSbgf9K/male-placeholder.jpg";
+            const newUser = {
+              _id: userId,
+              first_name,
+              last_name,
+              email,
+              password: hashedPassword,
+              public_json: {
+                user_id: userId,
+                first_name,
+                last_name,
+                photo: photoDefault,
+                email,
+              },
+            };
+            const user = await User.create(newUser);
+            return res.send({
+              status: 1,
+              response: `User ${newUser.email} - ${user._id} is created.`,
+            });
+          } catch (error) {
+            return res.json({
+              status: 0,
+              response: `Error while signing up user ${error}`,
+            });
+          }
+        });
+      }
+    }
+  });
 });
 
 // ########################################################
@@ -77,7 +92,7 @@ router.post("/login", async (req, res) => {
     if (err) {
       return res.send({
         status: 0,
-        response: `Something went wrong geting posts ${err}`,
+        response: `Something went wrong loging in ${err}`,
       });
     }
     let email = fields.email;
@@ -225,7 +240,8 @@ router.put("/change-profile-image", isAuthenticated, (req, res) => {
         response: "Error processing the image file",
       });
     }
-    detect.fromFile(files.picture.path, (err, result) => {
+
+    detect.fromFile(files.photo.path, (err, result) => {
       if (err) {
         return res.send({ status: 0, response: "error detecting" });
       }
@@ -235,7 +251,7 @@ router.put("/change-profile-image", isAuthenticated, (req, res) => {
       if (!allowedImageTypes.includes(result.ext)) {
         return res.send({ status: 0, response: "Image format not allowed." });
       }
-      const oldPath = files.picture.path;
+      const oldPath = files.photo.path;
       const newPath = path.join(__dirname, "..", "pictures", pictureName);
 
       fs.rename(oldPath, newPath, async (err) => {
@@ -247,10 +263,10 @@ router.put("/change-profile-image", isAuthenticated, (req, res) => {
           const updatedProfileImage = await User.findOneAndUpdate(
             { _id: req.userId },
             {
-              photo: newPath,
+              photo: pictureName,
               "public_json.photo": newPath,
             },
-            { useFindAndModify: false }
+            { new: true, useFindAndModify: false }
           );
           return res.send({
             status: 1,
@@ -272,8 +288,8 @@ router.put("/change-profile-image", isAuthenticated, (req, res) => {
 // get all contacts
 router.get("/contacts", isAuthenticated, async (req, res) => {
   let users = await User.find();
-  let newUsers = users.map((user) => ({ ...user, _id: user._id.toString() }));
-  // console.log(typeof users[1]._id.toString());
+  users.map((user) => ({ ...user, _id: user._id.toString() }));
+
   return res.send({
     status: 1,
     response: users,

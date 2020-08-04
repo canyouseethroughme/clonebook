@@ -51,17 +51,41 @@
 </script>
 
 <style>
+  .post {
+    height: 31rem;
+    width: 40rem;
+    border-radius: 20px;
+    box-shadow: 2px 1px 23px 6px rgba(0, 0, 0, 0.25);
+    margin-bottom: 2rem;
+  }
   img {
-    width: 4rem;
+    width: 40rem;
+    height: 24rem;
+    object-fit: cover;
   }
   button {
     border: 1px solid black;
   }
+  .like {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
 </style>
 
-<section>
+<section class="post">
+  <p class="pl-4 text-gray-400">Post from {post.user.first_name}</p>
+  <p class="pl-4 text-gray-600">Description: {post.description}</p>
   <img src={'http://localhost:8899/static/' + post.photo} alt="status" />
-  <div>{post.description}</div>
-  <p>Likes: {currentPost.likes.length}</p>
-  <button on:click={onLikePost}>Like</button>
+  <div class="like">
+    <button
+      class="ml-4 mt-2 bg-blue-800 hover:bg-blue-600 rounded-sm w-20 text-white
+      shadow-md"
+      style="justify-self: start"
+      on:click={onLikePost}>
+      Like
+    </button>
+    <p class="mr-4 mt-2" style="justify-self: end">
+      Likes: {currentPost.likes.length}
+    </p>
+  </div>
 </section>

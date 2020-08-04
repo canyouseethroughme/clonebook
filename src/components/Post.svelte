@@ -73,7 +73,7 @@
 </style>
 
 <section class="post">
-  <p class="pl-4 text-gray-400">Post from {post.user.first_name}</p>
+  <p class="pl-4 text-gray-400">{post.user.first_name}'s post</p>
   <p class="pl-4 text-gray-600">Description: {post.description}</p>
   <img src={'http://localhost:8899/static/' + post.photo} alt="status" />
   <div class="like">

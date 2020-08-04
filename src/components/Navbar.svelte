@@ -138,7 +138,7 @@
     </div>
   </div>
   <div class="signout">
-    <button on:click={onSignout}>Signout</button>
+    <button on:click={onSignout}>Signout {$profile.first_name}</button>
   </div>
 </nav>
 <!-- #################################### -->

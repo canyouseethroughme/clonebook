@@ -1,4 +1,4 @@
-export const putRequest = async (path, body) => {
+export const deleteRequest = async (path, body) => {
   const baseUrl = "http://localhost:8899";
   try {
     let response = await fetch(baseUrl + path, {

@@ -67,10 +67,10 @@
         bind:this={textareaDescription} />
       <div class="create_post_button">
         <p
-          class="ml-2"
+          class="ml-2 text-gray-600"
           on:click={() => hiddenImageInput.click()}
           style="cursor: pointer">
-          Add picture 📷
+          📷 Add photo
         </p>
         <input
           bind:this={hiddenImageInput}

@@ -92,14 +92,11 @@
     width: 100%;
   }
 
-  /* ICONS CONTAINER */
   div#iconsContainer {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     justify-items: center;
   }
-
-  /* PROFILE CONTAINER */
 </style>
 
 <!-- #################################### -->

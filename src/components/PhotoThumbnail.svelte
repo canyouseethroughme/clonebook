@@ -13,12 +13,13 @@
     position: relative;
   }
   .image_cropper {
-    width: 2rem;
-    height: 2rem;
+    width: 30px;
+    height: 30px;
     clip-path: circle(50% at 50% 50%);
   }
   img {
-    width: 10rem;
+    width: auto;
+    height: 100%;
   }
 
   span {

@@ -2,6 +2,7 @@
   import Navbar from "../components/Navbar.svelte";
   import { profile } from "../store.js";
   import { putRequest } from "./../utils/putRequest.js";
+  import { deleteRequest } from "./../utils/deleteRequest.js";
 
   let profileImageInput;
   let imageFile;
@@ -17,12 +18,20 @@
 
     $profile.photo = response.updatedProfileImage.photo;
   };
+
+  const onDelete = async () => {
+    let response = await deleteRequest("/users/delete-profile", $profile._id);
+    if (response.status === 1) {
+      localStorage.clear();
+      window.location.href = "/";
+    }
+  };
 </script>
 
 <style>
   .container {
     position: absolute;
-    height: 20rem;
+    height: 25rem;
     width: 20rem;
     top: 10rem;
     margin-left: auto;
@@ -32,14 +41,14 @@
     text-align: center;
   }
   .image_cropper {
-    width: 10rem;
-    height: 10rem;
+    width: 20rem;
+    height: 20rem;
     clip-path: circle(50% at 50% 50%);
-    margin: auto;
+    text-align: center;
   }
   img {
-    object-fit: cover;
-    height: 20rem;
+    height: 100%;
+    width: auto;
   }
 </style>
 
@@ -84,6 +93,12 @@
       w-64 shadow-md rounded-sm"
       on:click={onPost}>
       Save
+    </button>
+    <button
+      class="bg-red-600 hover:bg-red-500 rounded-sm w-20 text-white h-8 mt-8
+      w-64 shadow-md rounded-sm"
+      on:click={onDelete}>
+      Delete profile
     </button>
 
   </div>

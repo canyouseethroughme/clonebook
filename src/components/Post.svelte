@@ -74,7 +74,7 @@
 
 <section class="post">
   <p class="pl-4 text-gray-400">{post.user.first_name}'s post</p>
-  <p class="pl-4 text-gray-600">Description: {post.description}</p>
+  <p class="pl-4 text-gray-600">{post.description}</p>
   <img src={'http://localhost:8899/static/' + post.photo} alt="status" />
   <div class="like">
     <button
@@ -85,7 +85,8 @@
       Like
     </button>
     <p class="mr-4 mt-2" style="justify-self: end">
-      Likes: {currentPost.likes.length}
+      Likes:
+      <span class="font-bold">{currentPost.likes.length}</span>
     </p>
   </div>
 </section>
